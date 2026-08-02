@@ -1,19 +1,12 @@
-# 照片目录 — 放你的照片文件（本地使用，不上传 GitHub）
-photos/
-*.jpg
-*.png
-*.jpeg
-*.gif
-*.mp4
+# 忽略本地原始照片目录，但保留压缩预览图
+photos/*/
+!photos/qinggan/
+photos/qinggan-originals/
 
 # 系统文件
 .DS_Store
 Thumbs.db
 desktop.ini
-
-# IDE
 .vscode/
 .idea/
-
-# Node
 node_modules/
