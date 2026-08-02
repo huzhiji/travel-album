@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="我们的旅行手札 - 与你走过的每一个地方">
+  <title>我们的旅行手札 ❤️</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+</head>
+<body>
+
+<!-- 飘落花瓣容器 -->
+<div id="petals-container"></div>
+
+<!-- 预加载动画 -->
+<div id="preloader">
+  <div class="preloader-heart"></div>
+  <div class="preloader-text">LOADING</div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- 下载进度 -->
+<div class="download-progress" id="downloadProgress">
+  <div class="progress-ring">
+    <svg width="80" height="80" viewBox="0 0 80 80">
+      <circle class="progress-bg" cx="40" cy="40" r="36" />
+      <circle class="progress-fill" id="progressFill" cx="40" cy="40" r="36" />
+    </svg>
+    <div class="progress-text" id="progressPercent">0%</div>
+  </div>
+  <div class="download-progress-label" id="progressLabel">正在准备下载...</div>
+</div>
+
+<!-- 导航栏 -->
+<nav class="navbar" id="navbar">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo" onclick="navigateToHome()">
+      旅行手札<span>Our Memories</span>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="#" class="active" data-nav="home" onclick="navigateToHome()">首页</a>
+      <a href="#" data-nav="albums" onclick="scrollToSection('albums')">相册</a>
+      <a href="#" data-nav="poetry" onclick="scrollToSection('poetrySection')">情诗</a>
+      <a href="#" data-nav="letter" onclick="showLoveLetter()">情书<span class="nav-heart">❤</span></a>
+    </div>
+    <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- 下载栏 -->
+<div class="download-bar" id="downloadBar">
+  <div class="download-bar-info">已选择 <strong id="selectedCount">0</strong> 张照片</div>
+  <div class="download-bar-actions">
+    <button class="btn btn-outline" onclick="selectAll()">全选</button>
+    <button class="btn btn-outline" onclick="deselectAll()">取消全选</button>
+    <button class="btn btn-primary" onclick="batchDownload()" id="batchDownloadBtn">
+      <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      打包下载 (ZIP)
+    </button>
+    <button class="btn btn-danger" onclick="exitSelectionMode()">退出选择</button>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-header">
+    <span class="lightbox-counter"><strong id="lbCurrent">1</strong> / <span id="lbTotal">1</span></span>
+    <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+  </div>
+  <div class="lightbox-main">
+    <img class="lightbox-image" id="lbImage" src="" alt="" onclick="toggleZoom()" draggable="false">
+    <button class="lightbox-nav prev" onclick="lightboxPrev()">&#8249;</button>
+    <button class="lightbox-nav next" onclick="lightboxNext()">&#8250;</button>
+  </div>
+  <div class="lightbox-footer">
+    <span class="lightbox-title" id="lbTitle"></span>
+    <div class="lightbox-actions">
+      <span style="color:var(--text-secondary);font-size:12px;" id="lbRes"></span>
+      <button class="lightbox-btn" onclick="downloadSingle()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        下载原图
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 首页视图 ==================== -->
+<div class="view active" id="viewHome">
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-bg" id="heroBg"></div>
+    <div class="hero-content">
+      <h1 id="heroTitle"></h1>
+      <p class="hero-subtitle" id="heroSubtitle"></p>
+      <p class="hero-date">❤️ 我们的纪念日：每一天 ❤️</p>
+      <div class="hero-hearts">
+        <span>💕</span><span>❤️</span><span>💕</span>
+      </div>
+    </div>
+    <div class="hero-scroll">
+      <span>向下滑动，走进我们的故事</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- 相册区域 -->
+  <main class="main-content">
+    <div class="section-header" id="albums">
+      <h2>我们的旅行相册</h2>
+      <p>OUR JOURNEY TOGETHER</p>
+      <div class="section-line"></div>
+    </div>
+    <div class="albums-grid" id="albumsGrid"></div>
+
+    <!-- 💌 情诗墙 -->
+    <div class="poetry-section" id="poetrySection">
+      <div class="section-header">
+        <h2>为你读诗</h2>
+        <p>POEMS FOR YOU</p>
+        <div class="section-line"></div>
+      </div>
+      <div class="poetry-carousel">
+        <div class="poetry-slides" id="poetrySlides"></div>
+      </div>
+      <div class="poetry-nav">
+        <button onclick="prevPoem()">&#8249;</button>
+        <div class="poetry-dots" id="poetryDots"></div>
+        <button onclick="nextPoem()">&#8250;</button>
+      </div>
+    </div>
+
+    <!-- 💬 名言墙 -->
+    <div class="quotes-section" id="quotesSection">
+      <div class="section-header">
+        <h2>关于爱情</h2>
+        <p>WORDS OF LOVE</p>
+        <div class="section-line"></div>
+      </div>
+      <div class="quotes-wall" id="quotesWall"></div>
+    </div>
+  </main>
+
+  <footer class="footer" id="footerText">
+    <p id="footerContent"></p>
+    <p style="font-size:24px;margin-top:8px;">💕</p>
+  </footer>
+</div>
+
+<!-- ==================== 相册详情视图 ==================== -->
+<div class="view" id="viewAlbum">
+  <div class="main-content">
+    <div class="breadcrumb" id="breadcrumb"></div>
+    <div class="album-toolbar">
+      <div class="album-info">
+        <h1 id="albumName"></h1>
+        <p id="albumCount"></p>
+      </div>
+      <div class="album-actions">
+        <button class="btn btn-outline" onclick="navigateToHome()">← 返回首页</button>
+        <button class="btn btn-primary" id="selectionBtn" onclick="toggleSelectionMode()">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><polyline points="9 11 12 14 22 4"/></svg>
+          选择下载
+        </button>
+        <button class="btn btn-outline" onclick="startMobileSave()" style="border-color:var(--accent-light);color:var(--accent-light);">
+          📱 手机保存
+        </button>
+      </div>
+    </div>
+    <div class="masonry" id="masonryGrid"></div>
+  </div>
+</div>
+
+<!-- ==================== 情书视图 ==================== -->
+<div class="view" id="viewLetter">
+  <div class="main-content">
+    <div class="breadcrumb" id="letterBreadcrumb"></div>
+    <div class="love-letter-section">
+      <div class="love-letter-container">
+        <h2>写给你的一封信</h2>
+        <p class="letter-subtitle">A LETTER FOR YOU</p>
+        <div class="love-letter-content" id="loveLetterContent"></div>
+      </div>
+      <div style="text-align:center;margin-top:24px;">
+        <button class="btn btn-outline" onclick="navigateToHome()">← 返回首页</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 手机保存模式视图 ==================== -->
+<div class="view" id="viewMobileSave">
+  <div class="mobile-save-container">
+    <!-- 顶部栏 -->
+    <div class="ms-topbar">
+      <button class="ms-back" onclick="exitMobileSave()">✕ 退出</button>
+      <span class="ms-progress" id="msProgress">1 / 8</span>
+      <span class="ms-saved" id="msSaved">已保存 0 张</span>
+    </div>
+    <!-- 主图区域 -->
+    <div class="ms-image-area" id="msImageArea">
+      <img id="msImage" src="" alt="" draggable="false">
+      <div class="ms-swipe-hint" id="msSwipeHint">← 左右滑动切换 →</div>
+      <!-- iOS快捷指令引导 -->
+      <div class="ms-ios-guide" id="msIosGuide" style="display:none;">
+        <div class="ios-guide-content">
+          <p>💡 iPhone 用户：安装下方快捷指令后，可一键将下载的图片批量导入相册</p>
+          <a href="https://www.icloud.com/shortcuts/" target="_blank" class="btn btn-primary" style="font-size:12px;margin-top:8px;">
+            获取快捷指令 →
+          </a>
+        </div>
+      </div>
+    </div>
+    <!-- 底部操作栏 -->
+    <div class="ms-bottombar">
+      <span class="ms-photo-title" id="msPhotoTitle"></span>
+      <div class="ms-actions">
+        <button class="ms-btn ms-btn-prev" onclick="msPrevPhoto()">◀</button>
+        <button class="ms-btn ms-btn-save" id="msSaveBtn" onclick="msSaveCurrent()">
+          💾 保存到相册
+        </button>
+        <button class="ms-btn ms-btn-next" onclick="msNextPhoto()">▶</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
