@@ -1,106 +1,248 @@
 /**
- * ❤️  我们的旅行回忆 - 相册、情诗、情书与名言配置
+ * ❤️  青甘之恋 - 青海甘肃旅行照片展示
  *
- * ==================== 📸 照片路径配置说明 ====================
+ * ==================== 📸 alist 桥接百度网盘方案 ====================
  *
- * 支持三种模式（修改 PHOTO_BASE_URL 即可切换）：
+ * 照片托管流程：
+ *   百度网盘存储照片 → alist(Vercel)提供直链 → 网站展示
  *
- * 模式1 — 本地文件（开发调试用）：
- *   PHOTO_BASE_URL = ''
- *   使用 photoUrlLocal() 拼接路径，如 'photos/portrait/01.jpg'
+ * PHOTO_BASE_URL 部署后只需修改一次：
+ *   const PHOTO_BASE_URL = 'https://你的alist.vercel.app/d/baidu/青甘之恋_导出';
  *
- * 模式2 — alist 桥接百度网盘（推荐线上方案，0元/月）：
- *   PHOTO_BASE_URL = 'https://你的alist.vercel.app/d/存储名'
- *   照片放百度网盘 → alist 自动转直链 → 网站无缝展示
- *
- * 模式3 — 七牛云/腾讯云COS等对象存储：
- *   PHOTO_BASE_URL = 'https://your-bucket.cos.ap-guangzhou.myqcloud.com'
- *
- * ⚠️ 照片大小建议：
- *   - 网页预览：每张压缩到 300-500KB，加快加载
- *   - 原图下载：通过 alist 或百度网盘分享链接提供
+ * 百度网盘中的文件结构应与原始 J:\青甘之恋_导出\ 保持一致
  * ===================================================================
- *
- * 批量下载：
- * - 在相册页面点击「选择下载」→ 勾选照片 →「打包下载」
- * - JSZip 浏览器端打包，不经过服务器，真正不限速
  */
 
-// ==================== 📍 照片根路径（一键切换） ====================
-// 部署 alist 后，只需修改这一行！
-const PHOTO_BASE_URL = 'https://picsum.photos/seed';
-// 本地模式: const PHOTO_BASE_URL = '';
-// alist 模式: const PHOTO_BASE_URL = 'https://你的alist.vercel.app/d/baidu/travel-photos';
+// ==================== 📍 照片根路径 ====================
+// 部署 alist 后替换为实际地址：
+//   'https://xxx.vercel.app/d/baidu/青甘之恋_导出'
+const PHOTO_BASE_URL = '';
 
-// 辅助函数：拼接照片完整 URL
 function photoUrl(path) {
-  // 当前使用占位图，部署 alist 后改为下面的本地模式
-  return PHOTO_BASE_URL + '/' + path;
-  // 本地/alist 模式（取消下面注释，注释上面）：
-  // if (PHOTO_BASE_URL) return PHOTO_BASE_URL + '/' + path.replace(/^\//, '');
-  // return path;
+  if (PHOTO_BASE_URL) {
+    return PHOTO_BASE_URL + '/' + path.replace(/^\//, '');
+  }
+  return path;
 }
 
-// ==================== 📁 相册配置 ====================
+// ==================== 📁 青甘之恋相册 ====================
 const ALBUMS = [
   {
-    id: 'our-story',
-    name: '我们的足迹',
-    description: '一起走过的每一个地方，都是最美的风景',
-    cover: 'https://picsum.photos/seed/couple-cover/800/600',
+    id: 'qinggan',
+    name: '青甘之恋',
+    description: '青海湖畔的风，敦煌沙漠的沙，张掖丹霞的色 —— 我们的西北之旅',
+    cover: 'https://picsum.photos/seed/qinggan/800/600',
     photos: [
-      { src: 'https://picsum.photos/seed/couple1/1200/1600', title: '初见那天', width: 1200, height: 1600 },
-      { src: 'https://picsum.photos/seed/couple2/1200/1500', title: '你是我的小幸运', width: 1200, height: 1500 },
-      { src: 'https://picsum.photos/seed/couple3/1600/1067', title: '十指相扣的黄昏', width: 1600, height: 1067 },
-      { src: 'https://picsum.photos/seed/couple4/1200/1600', title: '只想和你虚度时光', width: 1200, height: 1600 },
-      { src: 'https://picsum.photos/seed/couple5/1600/1067', title: '世界再大，有你足矣', width: 1600, height: 1067 },
-      { src: 'https://picsum.photos/seed/couple6/1200/1500', title: '春风十里不如你', width: 1200, height: 1500 },
-      { src: 'https://picsum.photos/seed/couple7/1600/900', title: '陪你到世界尽头', width: 1600, height: 900 },
-      { src: 'https://picsum.photos/seed/couple8/1200/1200', title: '往后余生都是你', width: 1200, height: 1200 },
-    ]
-  },
-  {
-    id: 'seaside',
-    name: '海边の约定',
-    description: '海浪为证，许下相伴一生的诺言',
-    cover: 'https://picsum.photos/seed/seaside-cover/800/600',
-    photos: [
-      { src: 'https://picsum.photos/seed/sea1/1600/1067', title: '听海的声音', width: 1600, height: 1067 },
-      { src: 'https://picsum.photos/seed/sea2/1600/900', title: '踩着浪花的日子', width: 1600, height: 900 },
-      { src: 'https://picsum.photos/seed/sea3/1600/1067', title: '海风中你的发梢', width: 1600, height: 1067 },
-      { src: 'https://picsum.photos/seed/sea4/1200/1600', title: '落日与晚风', width: 1200, height: 1600 },
-      { src: 'https://picsum.photos/seed/sea5/1600/900', title: '沙滩上的脚印', width: 1600, height: 900 },
-      { src: 'https://picsum.photos/seed/sea6/1600/1067', title: '最浪漫的晚霞', width: 1600, height: 1067 },
-    ]
-  },
-  {
-    id: 'city-walk',
-    name: '城市漫步',
-    description: '在钢筋森林里，你是最温暖的光',
-    cover: 'https://picsum.photos/seed/city-cover/800/600',
-    photos: [
-      { src: 'https://picsum.photos/seed/city1/1200/1600', title: '霓虹下的剪影', width: 1200, height: 1600 },
-      { src: 'https://picsum.photos/seed/city2/1600/900', title: '一起逛过的街角', width: 1600, height: 900 },
-      { src: 'https://picsum.photos/seed/city3/1600/1067', title: '咖啡馆的午后', width: 1600, height: 1067 },
-      { src: 'https://picsum.photos/seed/city4/1200/1500', title: '城市灯火', width: 1200, height: 1500 },
-      { src: 'https://picsum.photos/seed/city5/1600/1067', title: '两个人的地铁', width: 1600, height: 1067 },
-      { src: 'https://picsum.photos/seed/city6/1200/1200', title: '雨天的伞下', width: 1200, height: 1200 },
-    ]
-  },
-  {
-    id: 'daily',
-    name: '日常小确幸',
-    description: '柴米油盐里，藏着最深的爱意',
-    cover: 'https://picsum.photos/seed/daily-cover/800/600',
-    photos: [
-      { src: 'https://picsum.photos/seed/sweet1/1200/1200', title: '为你做的早餐', width: 1200, height: 1200 },
-      { src: 'https://picsum.photos/seed/sweet2/1200/1500', title: '一起看电影', width: 1200, height: 1500 },
-      { src: 'https://picsum.photos/seed/sweet3/1200/1600', title: '你的鬼脸', width: 1200, height: 1600 },
-      { src: 'https://picsum.photos/seed/sweet4/1600/1067', title: '周末赖床', width: 1600, height: 1067 },
-      { src: 'https://picsum.photos/seed/sweet5/1200/1200', title: '一起下厨', width: 1200, height: 1200 },
-      { src: 'https://picsum.photos/seed/sweet6/1200/1500', title: '晚安 my love', width: 1200, height: 1500 },
-      { src: 'https://picsum.photos/seed/sweet7/1600/900', title: '早晨的阳光和你', width: 1600, height: 900 },
-      { src: 'https://picsum.photos/seed/sweet8/1200/1200', title: '今日份快乐', width: 1200, height: 1200 },
+      { src: photoUrl('qinggan/00000004.jpg'), title: '青甘之恋 · 1', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000005.jpg'), title: '青甘之恋 · 2', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000006.jpg'), title: '青甘之恋 · 3', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000007.jpg'), title: '青甘之恋 · 4', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000009.jpg'), title: '青甘之恋 · 5', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000012.jpg'), title: '青甘之恋 · 6', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000019.jpg'), title: '青甘之恋 · 7', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000030.jpg'), title: '青甘之恋 · 8', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000036.jpg'), title: '青甘之恋 · 9', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000040.jpg'), title: '青甘之恋 · 10', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000045.jpg'), title: '青甘之恋 · 11', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000046.jpg'), title: '青甘之恋 · 12', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000048.jpg'), title: '青甘之恋 · 13', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000056.jpg'), title: '青甘之恋 · 14', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000057.jpg'), title: '青甘之恋 · 15', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000061.jpg'), title: '青甘之恋 · 16', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000062.jpg'), title: '青甘之恋 · 17', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000063.jpg'), title: '青甘之恋 · 18', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000064.jpg'), title: '青甘之恋 · 19', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000066.jpg'), title: '青甘之恋 · 20', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000082.jpg'), title: '青甘之恋 · 21', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000087.jpg'), title: '青甘之恋 · 22', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000089.jpg'), title: '青甘之恋 · 23', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000096.jpg'), title: '青甘之恋 · 24', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000101.jpg'), title: '青甘之恋 · 25', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000102.jpg'), title: '青甘之恋 · 26', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000106.jpg'), title: '青甘之恋 · 27', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000110.jpg'), title: '青甘之恋 · 28', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000111.jpg'), title: '青甘之恋 · 29', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000113.jpg'), title: '青甘之恋 · 30', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000114.jpg'), title: '青甘之恋 · 31', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000120.jpg'), title: '青甘之恋 · 32', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000121.jpg'), title: '青甘之恋 · 33', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000122.jpg'), title: '青甘之恋 · 34', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000126.jpg'), title: '青甘之恋 · 35', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000128.jpg'), title: '青甘之恋 · 36', width: 6240, height: 4160 },
+      { src: photoUrl('qinggan/00000129.jpg'), title: '青甘之恋 · 37', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000130.jpg'), title: '青甘之恋 · 38', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000131.jpg'), title: '青甘之恋 · 39', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000132.jpg'), title: '青甘之恋 · 40', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000133.jpg'), title: '青甘之恋 · 41', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000134.jpg'), title: '青甘之恋 · 42', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000135.jpg'), title: '青甘之恋 · 43', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000136.jpg'), title: '青甘之恋 · 44', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000137.jpg'), title: '青甘之恋 · 45', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000138.jpg'), title: '青甘之恋 · 46', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000139.jpg'), title: '青甘之恋 · 47', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000140.jpg'), title: '青甘之恋 · 48', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000141.jpg'), title: '青甘之恋 · 49', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000142.jpg'), title: '青甘之恋 · 50', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000143.jpg'), title: '青甘之恋 · 51', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000144.jpg'), title: '青甘之恋 · 52', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000145.jpg'), title: '青甘之恋 · 53', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000146.jpg'), title: '青甘之恋 · 54', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000147.jpg'), title: '青甘之恋 · 55', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000148.jpg'), title: '青甘之恋 · 56', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000149.jpg'), title: '青甘之恋 · 57', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000150.jpg'), title: '青甘之恋 · 58', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000151.jpg'), title: '青甘之恋 · 59', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000152.jpg'), title: '青甘之恋 · 60', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000153.jpg'), title: '青甘之恋 · 61', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000154.jpg'), title: '青甘之恋 · 62', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000155.jpg'), title: '青甘之恋 · 63', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000156.jpg'), title: '青甘之恋 · 64', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000157.jpg'), title: '青甘之恋 · 65', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000158.jpg'), title: '青甘之恋 · 66', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000159.jpg'), title: '青甘之恋 · 67', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000160.jpg'), title: '青甘之恋 · 68', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000161.jpg'), title: '青甘之恋 · 69', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000162.jpg'), title: '青甘之恋 · 70', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000163.jpg'), title: '青甘之恋 · 71', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000164.jpg'), title: '青甘之恋 · 72', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000165.jpg'), title: '青甘之恋 · 73', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000166.jpg'), title: '青甘之恋 · 74', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000167.jpg'), title: '青甘之恋 · 75', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000168.jpg'), title: '青甘之恋 · 76', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000169.jpg'), title: '青甘之恋 · 77', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000170.jpg'), title: '青甘之恋 · 78', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000171.jpg'), title: '青甘之恋 · 79', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000172.jpg'), title: '青甘之恋 · 80', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000173.jpg'), title: '青甘之恋 · 81', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000174.jpg'), title: '青甘之恋 · 82', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000175.jpg'), title: '青甘之恋 · 83', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000176.jpg'), title: '青甘之恋 · 84', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000177.jpg'), title: '青甘之恋 · 85', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000178.jpg'), title: '青甘之恋 · 86', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000179.jpg'), title: '青甘之恋 · 87', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000180.jpg'), title: '青甘之恋 · 88', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000181.jpg'), title: '青甘之恋 · 89', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000182.jpg'), title: '青甘之恋 · 90', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000183.jpg'), title: '青甘之恋 · 91', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000184.jpg'), title: '青甘之恋 · 92', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000185.jpg'), title: '青甘之恋 · 93', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000186.jpg'), title: '青甘之恋 · 94', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000187.jpg'), title: '青甘之恋 · 95', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000188.jpg'), title: '青甘之恋 · 96', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000189.jpg'), title: '青甘之恋 · 97', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000190.jpg'), title: '青甘之恋 · 98', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000191.jpg'), title: '青甘之恋 · 99', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000192.jpg'), title: '青甘之恋 · 100', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000193.jpg'), title: '青甘之恋 · 101', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000194.jpg'), title: '青甘之恋 · 102', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000195.jpg'), title: '青甘之恋 · 103', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000196.jpg'), title: '青甘之恋 · 104', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000197.jpg'), title: '青甘之恋 · 105', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000198.jpg'), title: '青甘之恋 · 106', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000199.jpg'), title: '青甘之恋 · 107', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000200.jpg'), title: '青甘之恋 · 108', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000201.jpg'), title: '青甘之恋 · 109', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000202.jpg'), title: '青甘之恋 · 110', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000205.jpg'), title: '青甘之恋 · 111', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000206.jpg'), title: '青甘之恋 · 112', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000209.jpg'), title: '青甘之恋 · 113', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000210.jpg'), title: '青甘之恋 · 114', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000211.jpg'), title: '青甘之恋 · 115', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000212.jpg'), title: '青甘之恋 · 116', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000213.jpg'), title: '青甘之恋 · 117', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000214.jpg'), title: '青甘之恋 · 118', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000217.jpg'), title: '青甘之恋 · 119', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000218.jpg'), title: '青甘之恋 · 120', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000219.jpg'), title: '青甘之恋 · 121', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000220.jpg'), title: '青甘之恋 · 122', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000221.jpg'), title: '青甘之恋 · 123', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000222.jpg'), title: '青甘之恋 · 124', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000223.jpg'), title: '青甘之恋 · 125', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000225.jpg'), title: '青甘之恋 · 126', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000226.jpg'), title: '青甘之恋 · 127', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000227.jpg'), title: '青甘之恋 · 128', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000228.jpg'), title: '青甘之恋 · 129', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000229.jpg'), title: '青甘之恋 · 130', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000230.jpg'), title: '青甘之恋 · 131', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000242.jpg'), title: '青甘之恋 · 132', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000243.jpg'), title: '青甘之恋 · 133', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000244.jpg'), title: '青甘之恋 · 134', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000245.jpg'), title: '青甘之恋 · 135', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000246.jpg'), title: '青甘之恋 · 136', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000247.jpg'), title: '青甘之恋 · 137', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000248.jpg'), title: '青甘之恋 · 138', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000252.jpg'), title: '青甘之恋 · 139', width: 6240, height: 4160 },
+      { src: photoUrl('qinggan/00000253.jpg'), title: '青甘之恋 · 140', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000254.jpg'), title: '青甘之恋 · 141', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000256.jpg'), title: '青甘之恋 · 142', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000257.jpg'), title: '青甘之恋 · 143', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000260.jpg'), title: '青甘之恋 · 144', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000261.jpg'), title: '青甘之恋 · 145', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000262.jpg'), title: '青甘之恋 · 146', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000263.jpg'), title: '青甘之恋 · 147', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000264.jpg'), title: '青甘之恋 · 148', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000265.jpg'), title: '青甘之恋 · 149', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000266.jpg'), title: '青甘之恋 · 150', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000267.jpg'), title: '青甘之恋 · 151', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000268.jpg'), title: '青甘之恋 · 152', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000269.jpg'), title: '青甘之恋 · 153', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000270.jpg'), title: '青甘之恋 · 154', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000272.jpg'), title: '青甘之恋 · 155', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000275.jpg'), title: '青甘之恋 · 156', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000276.jpg'), title: '青甘之恋 · 157', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000277.jpg'), title: '青甘之恋 · 158', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000278.jpg'), title: '青甘之恋 · 159', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000279.jpg'), title: '青甘之恋 · 160', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000280.jpg'), title: '青甘之恋 · 161', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000281.jpg'), title: '青甘之恋 · 162', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000282.jpg'), title: '青甘之恋 · 163', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000283.jpg'), title: '青甘之恋 · 164', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000284.jpg'), title: '青甘之恋 · 165', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000285.jpg'), title: '青甘之恋 · 166', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000286.jpg'), title: '青甘之恋 · 167', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000287.jpg'), title: '青甘之恋 · 168', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000288.jpg'), title: '青甘之恋 · 169', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000289.jpg'), title: '青甘之恋 · 170', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000290.jpg'), title: '青甘之恋 · 171', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000291.jpg'), title: '青甘之恋 · 172', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000292.jpg'), title: '青甘之恋 · 173', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000293.jpg'), title: '青甘之恋 · 174', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000294.jpg'), title: '青甘之恋 · 175', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000295.jpg'), title: '青甘之恋 · 176', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000296.jpg'), title: '青甘之恋 · 177', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000297.jpg'), title: '青甘之恋 · 178', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000298.jpg'), title: '青甘之恋 · 179', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000299.jpg'), title: '青甘之恋 · 180', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000300.jpg'), title: '青甘之恋 · 181', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000661.jpg'), title: '青甘之恋 · 182', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000662.jpg'), title: '青甘之恋 · 183', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000663.jpg'), title: '青甘之恋 · 184', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000664.jpg'), title: '青甘之恋 · 185', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000665.jpg'), title: '青甘之恋 · 186', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000666.jpg'), title: '青甘之恋 · 187', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000667.jpg'), title: '青甘之恋 · 188', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000668.jpg'), title: '青甘之恋 · 189', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000672.jpg'), title: '青甘之恋 · 190', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000673.jpg'), title: '青甘之恋 · 191', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000680.jpg'), title: '青甘之恋 · 192', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000681.jpg'), title: '青甘之恋 · 193', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000682.jpg'), title: '青甘之恋 · 194', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000683.jpg'), title: '青甘之恋 · 195', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000684.jpg'), title: '青甘之恋 · 196', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000982.jpg'), title: '青甘之恋 · 197', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000988.jpg'), title: '青甘之恋 · 198', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000990.jpg'), title: '青甘之恋 · 199', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000991.jpg'), title: '青甘之恋 · 200', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000992.jpg'), title: '青甘之恋 · 201', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000993.jpg'), title: '青甘之恋 · 202', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00000994.jpg'), title: '青甘之恋 · 203', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00001010.jpg'), title: '青甘之恋 · 204', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00001011.jpg'), title: '青甘之恋 · 205', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00001012.jpg'), title: '青甘之恋 · 206', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00001013.jpg'), title: '青甘之恋 · 207', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00001027.jpg'), title: '青甘之恋 · 208', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00001042.jpg'), title: '青甘之恋 · 209', width: 4160, height: 6240 },
+      { src: photoUrl('qinggan/00001055.jpg'), title: '青甘之恋 · 210', width: 4160, height: 6240 },
     ]
   }
 ];
@@ -207,44 +349,46 @@ const LOVE_QUOTES = [
   { text: '你的名字，是我见过最短的情诗。', author: '' },
   { text: '斯人若彩虹，遇上方知有。', author: '《怦然心动》' },
   { text: '山野万里，你是我藏在微风里的欢喜。', author: '' },
+  { text: '穿过沙漠和雪山，最美的风景是你在我身边。', author: '' },
+  { text: '青海湖再大，也大不过我对你的思念。', author: '' },
   { text: '我爱你，不光因为你的样子，还因为和你在一起时，我的样子。', author: '罗伊·克里夫特' },
   { text: '世间所有的相遇，都是久别重逢。', author: '《一代宗师》' },
   { text: '有人问我你究竟是哪里好，这么多年我还忘不了。春风再美也比不上你的笑。', author: '李宗盛' },
   { text: '你是非常可爱的人，真应该遇到最好的人，我希望我就是。', author: '王小波' },
   { text: '我这一生都是坚定的唯物主义者，唯有你，我希望有来生。', author: '周恩来' },
   { text: '海底月是天上月，眼前人是心上人。', author: '张爱玲' },
-  { text: '答案很长，我准备用一生来回答，你准备好要听了吗？', author: '林徽因' },
   { text: '从前的日色变得慢，车、马、邮件都慢，一生只够爱一个人。', author: '木心' },
-  { text: '你来人间一趟，你要看看太阳，和你的心上人，一起走在街上。', author: '海子' },
 ];
 
 // ==================== 💌 情书模板 ====================
 const LOVE_LETTER = `
 亲爱的：
 
-写这封信的时候，脑海里全是我们一起去过的每一个地方。
+写这封信的时候，刚翻完我们在青甘线上的所有照片。
 
-还记得我们第一次旅行吗？你兴奋地规划路线，我偷偷给你拍照。那时候我就想，要是余生都能这样该多好——你在闹，我在笑，我们走在陌生的街道上，却因为有彼此而从不觉得孤单。
+从西宁出发那天，你坐在副驾，兴奋得像个小孩子。青海湖的蓝，茶卡盐湖的白，翡翠湖的绿——但所有的颜色加在一起，都不及你笑起来的时候好看。
 
-我们一起看过海边的落日，走过古城的长巷，吹过山顶的晚风。每一张照片背后都有一个故事，而每个故事的主角都是你。
+记得在祁连草原上，你追着羊群跑，我按下快门的那一刻，心想：这张照片一定要留一辈子。
 
-有人说，旅行是检验两个人是否合适的最好方式。那么，和你走过了这么多路，我想我已经找到了答案——你就是我想一起走到世界尽头的那个人。
+还有敦煌的沙漠。你踩着沙丘往上爬，夕阳把我们的影子拉得很长很长。那晚的星空特别亮，我说："以后每年都要带你出来。"你点点头，靠在我肩上。
 
-往后的日子里，还要和你去更多地方，看更多风景，拍更多照片。
+张掖的丹霞地貌像打翻的调色盘，你说这是大自然最浪漫的作品。我想说，我的世界里最浪漫的作品，是你。
 
-愿所有的旅途，都有你在我身边。
+这一路走了几千公里，翻过雪山，穿过戈壁，看过无数风景。但最美的风景，始终在我右手边——那个一直牵着我的手不放的人。
+
+青海很远，但你很近。
 
 爱你的 ❤️
 `;
 
 // ==================== 🌐 网站全局配置 ====================
 const SITE_CONFIG = {
-  name: '我们的旅行手札',
-  subtitle: 'OUR TRAVEL MEMORIES',
-  description: '世界很大，有你才算风景',
-  heroImage: 'https://picsum.photos/seed/love-hero/1920/1080',
-  footer: '❤️ 所有回忆，皆因有你 ❤️',
+  name: '青甘之恋',
+  subtitle: 'QINGHAI-GANSU LOVE STORY',
+  description: '三千公里西北路，你是我唯一的风景',
+  heroImage: 'https://picsum.photos/seed/qinggan-hero/1920/1080',
+  footer: '❤️ 青海很远，但你很近 ❤️',
   partner1: 'TA',
   partner2: '我',
-  anniversary: '每一天',
+  anniversary: '我们的西北之旅',
 };
