@@ -4,12 +4,12 @@
  * ==================== 📸 照片托管方案 ====================
  *
  * 七牛云对象存储：高清原图直链展示
- * 域名：https://tj4u61alq.hn-bkt.clouddn.com
+ * 域名：http://tj4u61alq.hn-bkt.clouddn.com
  * ===================================================================
  */
 
 // ==================== 📍 照片路径配置 ====================
-const PHOTO_BASE_URL = 'https://tj4u61alq.hn-bkt.clouddn.com';
+const PHOTO_BASE_URL = 'http://tj4u61alq.hn-bkt.clouddn.com';
 
 function photoUrl(path) {
   if (PHOTO_BASE_URL) {
