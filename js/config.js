@@ -27,17 +27,18 @@
  */
 
 // ==================== 📍 照片根路径（一键切换） ====================
-// 部署 alist 后，只需修改下面这一行！
-const PHOTO_BASE_URL = '';
-// 线上示例: const PHOTO_BASE_URL = 'https://my-alist.vercel.app/d/baidu/travel-photos';
+// 部署 alist 后，只需修改这一行！
+const PHOTO_BASE_URL = 'https://picsum.photos/seed';
+// 本地模式: const PHOTO_BASE_URL = '';
+// alist 模式: const PHOTO_BASE_URL = 'https://你的alist.vercel.app/d/baidu/travel-photos';
 
-// 辅助函数：自动拼接照片完整 URL
+// 辅助函数：拼接照片完整 URL
 function photoUrl(path) {
-  if (PHOTO_BASE_URL) {
-    return PHOTO_BASE_URL + '/' + path.replace(/^\//, '');
-  }
-  // 本地模式：直接使用相对路径
-  return path;
+  // 当前使用占位图，部署 alist 后改为下面的本地模式
+  return PHOTO_BASE_URL + '/' + path;
+  // 本地/alist 模式（取消下面注释，注释上面）：
+  // if (PHOTO_BASE_URL) return PHOTO_BASE_URL + '/' + path.replace(/^\//, '');
+  // return path;
 }
 
 // ==================== 📁 相册配置 ====================
@@ -46,60 +47,60 @@ const ALBUMS = [
     id: 'our-story',
     name: '我们的足迹',
     description: '一起走过的每一个地方，都是最美的风景',
-    cover: photoUrl('photos/our-story/cover.jpg'),
+    cover: 'https://picsum.photos/seed/couple-cover/800/600',
     photos: [
-      { src: photoUrl('photos/our-story/01.jpg'), title: '初见那天', width: 1200, height: 1600 },
-      { src: photoUrl('photos/our-story/02.jpg'), title: '你是我的小幸运', width: 1200, height: 1500 },
-      { src: photoUrl('photos/our-story/03.jpg'), title: '十指相扣的黄昏', width: 1600, height: 1067 },
-      { src: photoUrl('photos/our-story/04.jpg'), title: '只想和你虚度时光', width: 1200, height: 1600 },
-      { src: photoUrl('photos/our-story/05.jpg'), title: '世界再大，有你足矣', width: 1600, height: 1067 },
-      { src: photoUrl('photos/our-story/06.jpg'), title: '春风十里不如你', width: 1200, height: 1500 },
-      { src: photoUrl('photos/our-story/07.jpg'), title: '陪你到世界尽头', width: 1600, height: 900 },
-      { src: photoUrl('photos/our-story/08.jpg'), title: '往后余生都是你', width: 1200, height: 1200 },
+      { src: 'https://picsum.photos/seed/couple1/1200/1600', title: '初见那天', width: 1200, height: 1600 },
+      { src: 'https://picsum.photos/seed/couple2/1200/1500', title: '你是我的小幸运', width: 1200, height: 1500 },
+      { src: 'https://picsum.photos/seed/couple3/1600/1067', title: '十指相扣的黄昏', width: 1600, height: 1067 },
+      { src: 'https://picsum.photos/seed/couple4/1200/1600', title: '只想和你虚度时光', width: 1200, height: 1600 },
+      { src: 'https://picsum.photos/seed/couple5/1600/1067', title: '世界再大，有你足矣', width: 1600, height: 1067 },
+      { src: 'https://picsum.photos/seed/couple6/1200/1500', title: '春风十里不如你', width: 1200, height: 1500 },
+      { src: 'https://picsum.photos/seed/couple7/1600/900', title: '陪你到世界尽头', width: 1600, height: 900 },
+      { src: 'https://picsum.photos/seed/couple8/1200/1200', title: '往后余生都是你', width: 1200, height: 1200 },
     ]
   },
   {
     id: 'seaside',
     name: '海边の约定',
     description: '海浪为证，许下相伴一生的诺言',
-    cover: photoUrl('photos/seaside/cover.jpg'),
+    cover: 'https://picsum.photos/seed/seaside-cover/800/600',
     photos: [
-      { src: photoUrl('photos/seaside/01.jpg'), title: '听海的声音', width: 1600, height: 1067 },
-      { src: photoUrl('photos/seaside/02.jpg'), title: '踩着浪花的日子', width: 1600, height: 900 },
-      { src: photoUrl('photos/seaside/03.jpg'), title: '海风中你的发梢', width: 1600, height: 1067 },
-      { src: photoUrl('photos/seaside/04.jpg'), title: '落日与晚风', width: 1200, height: 1600 },
-      { src: photoUrl('photos/seaside/05.jpg'), title: '沙滩上的脚印', width: 1600, height: 900 },
-      { src: photoUrl('photos/seaside/06.jpg'), title: '最浪漫的晚霞', width: 1600, height: 1067 },
+      { src: 'https://picsum.photos/seed/sea1/1600/1067', title: '听海的声音', width: 1600, height: 1067 },
+      { src: 'https://picsum.photos/seed/sea2/1600/900', title: '踩着浪花的日子', width: 1600, height: 900 },
+      { src: 'https://picsum.photos/seed/sea3/1600/1067', title: '海风中你的发梢', width: 1600, height: 1067 },
+      { src: 'https://picsum.photos/seed/sea4/1200/1600', title: '落日与晚风', width: 1200, height: 1600 },
+      { src: 'https://picsum.photos/seed/sea5/1600/900', title: '沙滩上的脚印', width: 1600, height: 900 },
+      { src: 'https://picsum.photos/seed/sea6/1600/1067', title: '最浪漫的晚霞', width: 1600, height: 1067 },
     ]
   },
   {
     id: 'city-walk',
     name: '城市漫步',
     description: '在钢筋森林里，你是最温暖的光',
-    cover: photoUrl('photos/city-walk/cover.jpg'),
+    cover: 'https://picsum.photos/seed/city-cover/800/600',
     photos: [
-      { src: photoUrl('photos/city-walk/01.jpg'), title: '霓虹下的剪影', width: 1200, height: 1600 },
-      { src: photoUrl('photos/city-walk/02.jpg'), title: '一起逛过的街角', width: 1600, height: 900 },
-      { src: photoUrl('photos/city-walk/03.jpg'), title: '咖啡馆的午后', width: 1600, height: 1067 },
-      { src: photoUrl('photos/city-walk/04.jpg'), title: '城市灯火', width: 1200, height: 1500 },
-      { src: photoUrl('photos/city-walk/05.jpg'), title: '两个人的地铁', width: 1600, height: 1067 },
-      { src: photoUrl('photos/city-walk/06.jpg'), title: '雨天的伞下', width: 1200, height: 1200 },
+      { src: 'https://picsum.photos/seed/city1/1200/1600', title: '霓虹下的剪影', width: 1200, height: 1600 },
+      { src: 'https://picsum.photos/seed/city2/1600/900', title: '一起逛过的街角', width: 1600, height: 900 },
+      { src: 'https://picsum.photos/seed/city3/1600/1067', title: '咖啡馆的午后', width: 1600, height: 1067 },
+      { src: 'https://picsum.photos/seed/city4/1200/1500', title: '城市灯火', width: 1200, height: 1500 },
+      { src: 'https://picsum.photos/seed/city5/1600/1067', title: '两个人的地铁', width: 1600, height: 1067 },
+      { src: 'https://picsum.photos/seed/city6/1200/1200', title: '雨天的伞下', width: 1200, height: 1200 },
     ]
   },
   {
     id: 'daily',
     name: '日常小确幸',
     description: '柴米油盐里，藏着最深的爱意',
-    cover: photoUrl('photos/daily/cover.jpg'),
+    cover: 'https://picsum.photos/seed/daily-cover/800/600',
     photos: [
-      { src: photoUrl('photos/daily/01.jpg'), title: '为你做的早餐', width: 1200, height: 1200 },
-      { src: photoUrl('photos/daily/02.jpg'), title: '一起看电影', width: 1200, height: 1500 },
-      { src: photoUrl('photos/daily/03.jpg'), title: '你的鬼脸', width: 1200, height: 1600 },
-      { src: photoUrl('photos/daily/04.jpg'), title: '周末赖床', width: 1600, height: 1067 },
-      { src: photoUrl('photos/daily/05.jpg'), title: '一起下厨', width: 1200, height: 1200 },
-      { src: photoUrl('photos/daily/06.jpg'), title: '晚安 my love', width: 1200, height: 1500 },
-      { src: photoUrl('photos/daily/07.jpg'), title: '早晨的阳光和你', width: 1600, height: 900 },
-      { src: photoUrl('photos/daily/08.jpg'), title: '今日份快乐', width: 1200, height: 1200 },
+      { src: 'https://picsum.photos/seed/sweet1/1200/1200', title: '为你做的早餐', width: 1200, height: 1200 },
+      { src: 'https://picsum.photos/seed/sweet2/1200/1500', title: '一起看电影', width: 1200, height: 1500 },
+      { src: 'https://picsum.photos/seed/sweet3/1200/1600', title: '你的鬼脸', width: 1200, height: 1600 },
+      { src: 'https://picsum.photos/seed/sweet4/1600/1067', title: '周末赖床', width: 1600, height: 1067 },
+      { src: 'https://picsum.photos/seed/sweet5/1200/1200', title: '一起下厨', width: 1200, height: 1200 },
+      { src: 'https://picsum.photos/seed/sweet6/1200/1500', title: '晚安 my love', width: 1200, height: 1500 },
+      { src: 'https://picsum.photos/seed/sweet7/1600/900', title: '早晨的阳光和你', width: 1600, height: 900 },
+      { src: 'https://picsum.photos/seed/sweet8/1200/1200', title: '今日份快乐', width: 1200, height: 1200 },
     ]
   }
 ];
@@ -241,7 +242,7 @@ const SITE_CONFIG = {
   name: '我们的旅行手札',
   subtitle: 'OUR TRAVEL MEMORIES',
   description: '世界很大，有你才算风景',
-  heroImage: photoUrl('photos/hero.jpg'),
+  heroImage: 'https://picsum.photos/seed/love-hero/1920/1080',
   footer: '❤️ 所有回忆，皆因有你 ❤️',
   partner1: 'TA',
   partner2: '我',
