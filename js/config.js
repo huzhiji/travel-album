@@ -3,15 +3,13 @@
  *
  * ==================== 📸 照片托管方案 ====================
  *
- * 当前方案：压缩预览图托管在 GitHub Pages（1600px，共约 60MB，免费）
- * 原图下载：通过百度网盘分享链接获取（文件夹路径：/照片/青甘之恋导出）
+ * 七牛云对象存储：高清原图直链展示
+ * 域名：https://tj4u61alq.hn-bkt.clouddn.com
  * ===================================================================
  */
 
 // ==================== 📍 照片路径配置 ====================
-// 当前使用本地压缩预览图
-const PHOTO_BASE_URL = '';
-// 如果将来使用 alist，改为：'https://xxx.vercel.app/d/baidu/照片/青甘之恋导出'
+const PHOTO_BASE_URL = 'https://tj4u61alq.hn-bkt.clouddn.com';
 
 function photoUrl(path) {
   if (PHOTO_BASE_URL) {
